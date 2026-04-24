@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { pool } from "../db.js";
 import bcrypt from "bcryptjs";
+import { authMiddleware } from "../middleware/auth.js";
 
 const router = Router();
+
+// 🔐 PROTEGER TODAS LAS RUTAS
+router.use(authMiddleware);
 
 // GET todos los usuarios
 router.get("/", async (req, res) => {
@@ -10,7 +14,7 @@ router.get("/", async (req, res) => {
   res.json(rows);
 });
 
-// GET usuario por ID
+// GET por ID
 router.get("/:id", async (req, res) => {
   const [rows] = await pool.query(
     "SELECT id, email FROM users WHERE id = ?",
@@ -55,7 +59,7 @@ router.put("/:id", async (req, res) => {
   res.json({ mensaje: "Usuario actualizado" });
 });
 
-// DELETE eliminar usuario
+// DELETE usuario
 router.delete("/:id", async (req, res) => {
   await pool.query("DELETE FROM users WHERE id = ?", [req.params.id]);
 

@@ -1,6 +1,6 @@
-# 🚀 API Backend Node.js
+# 🚀 API Backend Node.js + Docker + MySQL
 
-## 📌 Información del estudiante
+## 📌 🧑‍🎓 Información del estudiante
 
 * **Nombre:** Jhon Fernando Gómez Quispe
 * **ID:** 1613201
@@ -9,26 +9,27 @@
 
 ---
 
-## 📌 Descripción del proyecto
+## 📌 📖 Descripción del proyecto
 
-Este proyecto consiste en el desarrollo de una **API REST** utilizando Node.js y Express, conectada a una base de datos MySQL en la nube (Railway).
+Este proyecto es una **API REST completa** desarrollada con Node.js y Express, conectada a una base de datos MySQL en la nube (Railway) y ejecutada mediante Docker.
 
-Incluye:
+🔹 Permite gestionar usuarios, clientes e items
+🔹 Incluye autenticación segura con JWT
+🔹 Usa validaciones para garantizar datos correctos
+🔹 Relaciona clientes con productos
+🔹 Está preparado para un sistema de ventas (tipo tienda)
 
-* CRUD completo de items
-* Sistema de autenticación (registro y login)
-* Encriptación de contraseñas
-* Generación de tokens JWT
-* Protección de rutas
+👉 En resumen: es una base funcional de un **sistema de ventas backend profesional**
 
 ---
 
-## 🛠 Tecnologías utilizadas
+## 🛠 ⚙️ Tecnologías utilizadas
 
 * Node.js
 * Express
 * MySQL (Railway)
-* jsonwebtoken (JWT)
+* Docker
+* JWT (jsonwebtoken)
 * bcryptjs
 * cors
 * dotenv
@@ -36,71 +37,110 @@ Incluye:
 
 ---
 
-## ⚙️ Instalación y ejecución
+## 🐳 🐋 Uso de Docker (IMPORTANTE)
 
-### 📥 1. Clonar el proyecto
-
-```bash
-git clone TU_URL_DEL_REPOSITORIO
-cd api-backend
-```
-
----
-
-### 📦 2. Inicializar proyecto (si fuera desde cero)
+### 📦 1. Construir imagen
 
 ```bash
-npm init -y
+docker build -t backend-api .
 ```
+
+✔ Compila la API dentro de una imagen
 
 ---
 
-### 📚 3. Instalar dependencias principales
+### 🚀 2. Ejecutar contenedor
 
 ```bash
-npm install express mysql2 dotenv jsonwebtoken bcryptjs cors
+docker run -p 3000:3000 --env-file .env backend-api
 ```
+
+✔ Inicia el servidor en Docker
+✔ Expone la API en [http://localhost:3000](http://localhost:3000)
 
 ---
 
-### 🛠 4. Instalar dependencia de desarrollo
+### 📋 3. Ver contenedores activos
 
 ```bash
-npm install nodemon --save-dev
+docker ps
 ```
 
 ---
 
-### ⚙️ 5. Configurar variables de entorno
+### 🔁 4. Reiniciar contenedor
 
-Crear archivo `.env`:
-
-```env
-DATABASE_URL=mysql://root:TU_PASSWORD@TU_HOST:PUERTO/TU_DB
+```bash
+docker restart NOMBRE_CONTENEDOR
 ```
 
 ---
 
-### ▶️ 6. Ejecutar el servidor
+### 🧹 5. Eliminar contenedor
+
+```bash
+docker stop NOMBRE_CONTENEDOR
+docker rm NOMBRE_CONTENEDOR
+```
+
+---
+
+### 🧪 6. Entrar al contenedor
+
+```bash
+docker exec -it NOMBRE_CONTENEDOR sh
+```
+
+---
+
+## ⚙️ ⚡ Configuración del proyecto
+
+### 📥 1. Clonar repositorio
+
+```bash
+git clone TU_URL
+cd apibackend
+```
+
+---
+
+### 📦 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+---
+
+### ▶️ 3. Ejecutar en desarrollo
 
 ```bash
 npm run dev
 ```
 
-Servidor disponible en:
-http://localhost:3000
+---
+
+## 🌐 🔐 Variables de entorno (.env)
+
+```env
+PORT=3000
+DATABASE_URL=mysql://root:password@host:3306/database
+JWT_SECRET=secreto123
+```
 
 ---
 
-## 🔐 Autenticación
+## 🔐 🔑 Autenticación
 
 ### 📌 Registro
 
-**POST** `/register`
+```http
+POST /api/register
+```
 
 ```json
 {
-  "email": "user@correo.com",
+  "email": "user@test.com",
   "password": "1234"
 }
 ```
@@ -109,139 +149,170 @@ http://localhost:3000
 
 ### 📌 Login
 
-**POST** `/login`
-
-```json
-{
-  "email": "user@correo.com",
-  "password": "1234"
-}
+```http
+POST /api/login
 ```
 
-✔ Retorna un token JWT
+✔ Retorna token JWT
 
 ---
 
-## 🔒 Uso del token
+### 🔒 Uso del token
 
-Para acceder a rutas protegidas:
-
-```
+```http
 Authorization: Bearer TU_TOKEN
 ```
 
 ---
 
-## 📦 CRUD de Items
+## 📦 📦 CRUD Items
 
-### Obtener todos
+* GET `/api/items`
+* GET `/api/items/:id`
+* POST `/api/items`
+* PUT `/api/items/:id`
+* DELETE `/api/items/:id`
 
-**GET** `/api/items`
+---
 
-### Obtener por ID
+## 👤 👥 CRUD Clientes
 
-**GET** `/api/items/:id`
+### 📌 Validaciones implementadas
 
-### Crear item
+✔ DNI: 8 dígitos
+✔ Celular: 9 dígitos
+✔ Validación de producto existente (item_id)
+✔ Relación cliente ↔ item (JOIN)
 
-**POST** `/api/items`
+---
 
-```json
-{
-  "nombre": "Producto",
-  "descripcion": "Ejemplo",
-  "estado": true
-}
+### 📌 Crear cliente
+
+```http
+POST /api/clientes
 ```
 
-### Actualizar item
+---
 
-**PUT** `/api/items/:id`
+### 📊 Clientes con producto (JOIN)
 
-### Eliminar item
+```http
+GET /api/clientes/detalle
+```
 
-**DELETE** `/api/items/:id`
+✔ Muestra cliente + nombre del producto
 
 ---
 
-## 🗄 Base de datos
+## 🗄 🧱 Base de datos
 
-Base de datos MySQL alojada en Railway.
+### 👤 Tabla: users
 
-### Tabla: items
-
-* id (INT, PK)
-* nombre (VARCHAR)
-* descripcion (TEXT)
-* estado (BOOLEAN)
-* created_at (TIMESTAMP)
-
-### Tabla: users
-
-* id (INT, PK)
-* email (VARCHAR)
-* password (TEXT encriptado)
+* id
+* email
+* password (encriptado)
+* role (user/admin)
 
 ---
 
-## ⚠️ Problemas encontrados y soluciones
+### 📦 Tabla: items
 
-### ❌ Error: ejecución de scripts bloqueada (PowerShell)
+* id
+* nombre
+* descripcion
+* estado
+* created_at
 
-* **Problema:** npm no funcionaba
-* **Solución:**
+---
+
+### 👥 Tabla: clientes
+
+* id
+* nombre
+* apellido
+* DNI
+* celular
+* direccion
+* item_id (FK)
+* tipo_comprobante (boleta / factura)
+
+---
+
+## ⚠️ 🚨 Problemas encontrados y soluciones
+
+### ❌ Error: puerto ocupado en Docker
+
+✔ Solución:
 
 ```bash
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+docker stop CONTAINER
+docker rm CONTAINER
 ```
 
 ---
 
-### ❌ Error: módulo no encontrado
+### ❌ Error: req.body undefined
 
-* **Problema:** faltaba archivo `auth.js`
-* **Solución:** crear carpeta `middleware` y archivo correspondiente
+✔ Solución:
 
----
-
-### ❌ Error: conexión a base de datos externa
-
-* **Problema:** `ENOTFOUND`
-* **Solución:** migración de InfinityFree a Railway
+```js
+app.use(express.json());
+```
 
 ---
 
-### ❌ Error: login inseguro
+### ❌ Error: auth.js no exporta correctamente
 
-* **Problema:** uso de usuarios en memoria
-* **Solución:** implementación con MySQL + bcrypt + JWT
-
----
-
-### ❌ Error: rutas sin protección
-
-* **Problema:** acceso sin autenticación
-* **Solución:** uso de middleware JWT
+✔ Solución:
+corregir export/import a named export
 
 ---
 
-## ✅ Estado del proyecto
+### ❌ Error: producto no existe (item_id)
 
-✔ API REST funcional
-✔ CRUD completo
-✔ Base de datos en la nube
-✔ Autenticación segura
-✔ Rutas protegidas con JWT
+✔ Solución:
+validación previa con SELECT en items
 
 ---
 
-## 📦 Repositorio
+### ❌ Error: cambios no se reflejan en Docker
 
-Proyecto alojado en GitHub.
+✔ Solución:
+
+```bash
+docker build -t backend-api .
+```
+
+---
+
+## 🧠 🚀 Mejoras implementadas
+
+✔ Validación de datos
+✔ Relaciones entre tablas
+✔ Seguridad con JWT
+✔ Roles base (admin/user)
+✔ API lista para sistema de ventas
+
+---
+
+## 💰 📈 Siguiente mejora (nivel pro)
+
+Sistema de ventas completo:
+
+* cliente_id
+* item_id
+* cantidad
+* precio unitario
+* total
+* fecha
+
+👉 Esto convierte la API en un **POS (punto de venta real)**
 
 ---
 
 ## 👨‍💻 Autor
 
 **Jhon Fernando Gómez Quispe**
-Estudiante de Ingeniería de Software con IA – SENATI
+SENATI – Ingeniería de Software con IA
+
+---

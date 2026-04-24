@@ -5,6 +5,7 @@ import { pool } from "./db.js";
 import itemsRoutes from "./routes/items.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import usersRoutes from "./routes/users.routes.js";
+import clientesRoutes from "./routes/clientes.routes.js"; // 👈 FALTA ESTO
 
 const app = express();
 
@@ -21,9 +22,8 @@ app.use("/api", authRoutes);
 
 // 🔒 Rutas protegidas
 app.use("/api/items", itemsRoutes);
-
-// (opcional)
 app.use("/api/users", usersRoutes);
+app.use("/api/clientes", clientesRoutes); // 👈 AÑADIDO
 
 // Test DB
 app.get("/test-db", async (req, res) => {
