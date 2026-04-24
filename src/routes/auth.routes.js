@@ -9,12 +9,32 @@ const SECRET = "secreto123";
 // 🧠 almacenamiento en memoria (temporal)
 const loginAttempts = {};
 
+// ✅ REGISTER
+router.post("/register", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.query(
+      "INSERT INTO users (email, password) VALUES (?, ?)",
+      [email, hashedPassword]
+    );
+
+    res.json({ mensaje: "Usuario registrado correctamente" });
+
+  } catch (error) {
+    res.status(400).json({ mensaje: "El usuario ya existe" });
+  }
+});
+
+// ✅ LOGIN
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   const now = Date.now();
 
-  // 🔴 si está bloqueado
+  // 🔴 bloqueo temporal
   if (loginAttempts[email]?.blockUntil > now) {
     const wait = Math.ceil((loginAttempts[email].blockUntil - now) / 1000);
     return res.status(429).json({
@@ -42,14 +62,12 @@ router.post("/login", async (req, res) => {
 
     loginAttempts[email].count++;
 
-    // ⚠️ advertencia en 2 intentos
     if (loginAttempts[email].count === 2) {
       return res.status(401).json({
         mensaje: "Advertencia: último intento antes de bloqueo"
       });
     }
 
-    // 🚫 tercer intento → bloqueo 30s
     if (loginAttempts[email].count >= 3) {
       loginAttempts[email].blockUntil = now + 30 * 1000;
       loginAttempts[email].count = 0;
@@ -64,7 +82,7 @@ router.post("/login", async (req, res) => {
     });
   }
 
-  // ✅ login correcto → reset intentos
+  // ✅ reset intentos
   loginAttempts[email] = { count: 0, blockUntil: 0 };
 
   const token = jwt.sign(
